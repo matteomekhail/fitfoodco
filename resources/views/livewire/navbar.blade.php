@@ -140,17 +140,13 @@
                 window.dispatchEvent(new CustomEvent('toggleSidebar'));
             }
 
-            function getNextMonday(currentDate) {
-                let day = currentDate.getDay();
-                let diff = (day < 1) ? 1 - day : 7 - day; // 1 = lunedì
-                let nextMonday = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + diff, 23,
-                    59, 59); // Aggiungi il numero di giorni mancanti per arrivare al prossimo lunedì alle 23:59:59
-                return nextMonday;
+            function getNextDeliveryDate() {
+                return new Date(2024, 9, 7, 23, 59, 59); // 7 ottobre 2024 alle 23:59:59
             }
 
             function updateCountdown() {
                 const now = new Date();
-                const targetDate = getNextMonday(now);
+                const targetDate = getNextDeliveryDate();
                 const distance = targetDate - now;
 
                 // Calcolo giorni, ore, minuti e secondi
