@@ -103,7 +103,7 @@
                                     role="alert">
                                     <strong class="font-bold">Success!</strong> <br>
                                     <span class="block sm:inline">{{ session('message') }}</span>
-                                </div>
+                                </div>  
                             @endif
                             <div>
                                 <label for="email" class="text-sm font-medium text-black block mb-2">Your
