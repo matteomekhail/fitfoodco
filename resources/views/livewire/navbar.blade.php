@@ -141,7 +141,12 @@
             }
 
             function getNextDeliveryDate() {
-                return new Date(2024, 9, 7, 23, 59, 59); // 7 ottobre 2024 alle 23:59:59
+                const oggi = new Date();
+                const giorniFinoALunedi = (1 + 7 - oggi.getDay()) % 7;
+                const prossimoLunedi = new Date(oggi);
+                prossimoLunedi.setDate(oggi.getDate() + giorniFinoALunedi);
+                prossimoLunedi.setHours(23, 59, 59, 999);
+                return prossimoLunedi;
             }
 
             function updateCountdown() {

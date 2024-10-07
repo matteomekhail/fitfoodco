@@ -34,30 +34,31 @@
                 let printContents = document.querySelectorAll('.uncooked-order');
                 let originalContents = document.body.innerHTML;
 
-                document.body.innerHTML = '';
-                printContents.forEach(function(order) {
+                // Crea un nuovo contenitore per gli ordini da stampare
+                let printContainer = document.createElement('div');
+
+                printContents.forEach(function(order, index) {
                     let clonedOrder = order.cloneNode(true);
 
-                    let images = clonedOrder.querySelectorAll('img');
-                    images.forEach(function(image) {
-                        image.parentNode.removeChild(image);
-                    });
+                    // Rimuovi immagini e pulsanti
+                    clonedOrder.querySelectorAll('img, button').forEach(el => el.remove());
 
-                    let buttons = clonedOrder.querySelectorAll('button');
-                    buttons.forEach(function(button) {
-                        button.parentNode.removeChild(button);
-                    });
-
-                    // Crea un nuovo div per ogni ordine e applica lo stile di interruzione di pagina
+                    // Crea un div per ogni ordine con stile di interruzione pagina
                     let orderDiv = document.createElement('div');
                     orderDiv.style.pageBreakAfter = 'always';
                     orderDiv.appendChild(clonedOrder);
 
-                    document.body.appendChild(orderDiv);
+                    // Aggiungi l'ordine al contenitore di stampa
+                    printContainer.appendChild(orderDiv);
                 });
+
+                // Sostituisci il contenuto del body con il contenitore di stampa
+                document.body.innerHTML = '';
+                document.body.appendChild(printContainer);
 
                 window.print();
 
+                // Ripristina il contenuto originale
                 document.body.innerHTML = originalContents;
             });
         });
