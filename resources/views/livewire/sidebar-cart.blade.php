@@ -115,7 +115,7 @@
                     </span>
                 </div>
 
-                @if (!$isPickup && !Auth::user()->free_shipping)
+                @if (!$isPickup && !Auth::user()?->free_shipping)
                     <div class="text-sm text-gray-500">+ $9.99 shipping</div>
                 @else
                     <div class="text-sm text-gray-500">Free Shipping</div>
