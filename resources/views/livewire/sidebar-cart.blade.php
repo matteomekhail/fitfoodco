@@ -65,18 +65,36 @@
                     @endif
                 @endforeach
             </div>
-        @else
-            <div class="text-gray-500 text-lg my-4 text-center flex justify-center items-center flex-grow">
-                <i class="fas fa-shopping-cart mr-2"></i>
-                You have no items in your cart
+
+<div class="mt-6 mb-6 bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+    <h3 class="text-lg font-semibold text-black mb-4">Pickup Options</h3>
+    <div class="mb-4">
+        <label for="pickup" class="flex items-center cursor-pointer">
+            <input type="checkbox" id="pickup" wire:model.live="isPickup" class="form-checkbox h-5 w-5 text-[#FACB01] rounded border-gray-300 focus:ring-[#FACB01]">
+            <span class="ml-3 text-sm text-gray-700">Gym Pickup</span>
+        </label>
+    </div>
+
+    @if ($isPickup)
+        <div class="mb-4">
+            <select wire:model.live="selectedGym" class="w-full p-2 text-sm border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#FACB01] focus:border-transparent">
+                <option value="">Select a gym</option>
+                @foreach ($gyms as $gym)
+                    <option value="{{ $gym->id }}">{{ $gym->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        @if ($selectedGym)
+            <div class="text-sm text-gray-600 space-y-1">
+                <p>{{ $gyms->find($selectedGym)->address }}</p>
+                <p>{{ $gyms->find($selectedGym)->city }}, {{ $gyms->find($selectedGym)->postal_code }}</p>
+                <p>{{ $gyms->find($selectedGym)->phone }}</p>
             </div>
         @endif
-        <div class="bg-[#FACB01] text-black px-4 py-2 rounded-lg my-4 text-center">
-            <span class="font-bold">Special Bulk Pricing:</span> Order over 20 MEALS and pay only <span
-                class="font-bold">$10/MEAL!</span>
-        </div>
-        <div class="sticky bottom-0 z-50 bg-transparent p-4 border-t border-black">
-            @if (count($cartItems) > 0)
+    @endif
+</div>
+
+            <div class="sticky bottom-0 z-50 bg-transparent p-4 border-t border-black">
                 <div class="flex justify-between mb-4">
                     <span class="text-lg text-black font-bold">Total</span>
                     <span class="text-lg text-black font-bold">
@@ -95,25 +113,31 @@
                             ) }}
                         @endif
                     </span>
-                    @if (auth()->user() && auth()->user()->free_shipping)
-                        <div class="text-sm text-gray-500">Free Shipping</div>
-                    @else
-                        <div class="text-sm text-gray-500">+ $9.99 shipping</div>
-                    @endif
                 </div>
-        </div>
-        <button wire:click="checkout"
-            class="bg-white text-black w-full px-4 py-2 rounded-lg text-lg flex justify-center items-center transition-colors duration-200 ease-in-out hover:bg-black hover:text-[#FACB01]">
-            <i class="fas fa-shopping-cart mr-2"></i>
-            Checkout
-        </button>
+
+                @if (!$isPickup && !Auth::user()->free_shipping)
+                    <div class="text-sm text-gray-500">+ $9.99 shipping</div>
+                @else
+                    <div class="text-sm text-gray-500">Free Shipping</div>
+                @endif
+
+                <button wire:click="checkout"
+                    class="bg-white text-black w-full px-4 py-2 rounded-lg text-lg flex justify-center items-center transition-colors duration-200 ease-in-out hover:bg-black hover:text-[#FACB01]">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    Checkout
+                </button>
+            </div>
+        @else
+            <div class="text-gray-500 text-lg my-4 text-center flex justify-center items-center flex-grow">
+                <i class="fas fa-shopping-cart mr-2"></i>
+                Your cart is empty
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
         @endif
     </div>
-    @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-</div>
-<!-- Aggiungi questa div per chiudere la sidebar quando si fa clic sullo sfondo -->
 </div>
