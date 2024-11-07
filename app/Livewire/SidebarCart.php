@@ -9,13 +9,20 @@ use App\Models\Gym;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ReferralLink;
 
 class SidebarCart extends Component
 {
     public $isOpen = false;
     public $isPickup = false;
     public $selectedGym = null;
+    public $referralCode;
     protected $listeners = ['toggleSidebar' => 'toggleCartSidebar', 'updateQuantity' => 'refreshItem'];
+
+    public function mount()
+    {
+        $this->referralCode = session('referral_code');
+    }
 
     public function getCartItems()
     {
@@ -111,6 +118,14 @@ class SidebarCart extends Component
             }
         }
 
+        $referral_stripe_account = null;
+        if ($this->referralCode) {
+            $referralLink = ReferralLink::where('code', $this->referralCode)->first();
+            if ($referralLink) {
+                $referral_stripe_account = $referralLink->stripe_account_id;
+            }
+        }
+
         $sessionParams = [
             'payment_method_types' => ['card'],
             'line_items' => $line_items,
@@ -123,14 +138,15 @@ class SidebarCart extends Component
             'metadata' => [
                 'is_pickup' => $this->isPickup ? 'true' : 'false',
                 'gym_id' => $this->isPickup ? $this->selectedGym : null,
+                'referral_code' => $this->referralCode,
             ],
         ];
 
-        if ($gym_stripe_account) {
+        if ($referral_stripe_account && !$this->isPickup) {
             $sessionParams['payment_intent_data'] = [
-                'application_fee_amount' => intval($total_amount * 0.95 * 100), // 95% trattenuto come commissione
+                'application_fee_amount' => intval($total_amount * 0.95 * 100), // 95% trattenuto
                 'transfer_data' => [
-                    'destination' => $gym_stripe_account, // L'account della palestra riceverà il 5%
+                    'destination' => $referral_stripe_account, // Il personal trainer riceverà il 5%
                 ],
             ];
         }

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\ReferralController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +15,7 @@ use App\Http\Controllers\StripeWebhookController;
 |
 */
 
-Route::view('/', 'welcome');
+Route::view('/', 'welcome')->name('home');
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
 
@@ -26,7 +27,10 @@ Route::view('/meals', 'selectionMeals');
 
 Route::view('/success', 'success');
 
+Route::get('/ref/{code}', [ReferralController::class, 'handleReferral'])->name('referral.handle');
 
-
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/referral-links', App\Livewire\Admin\ReferralLinks::class)->name('admin.referral-links');
+});
 
 require __DIR__ . '/auth.php';
