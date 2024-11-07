@@ -12,4 +12,6 @@ class ReferralLink extends Model
         'trainer_name',
         'trainer_email'
     ];
+
+
 }
