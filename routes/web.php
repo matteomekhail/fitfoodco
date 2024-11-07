@@ -30,7 +30,8 @@ Route::view('/success', 'success');
 Route::get('/ref/{code}', [ReferralController::class, 'handleReferral'])->name('referral.handle');
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/referral-links', App\Livewire\Admin\ReferralLinks::class)->name('admin.referral-links');
+    Route::get('/referral-links', \App\Livewire\Admin\ReferralLinks::class)
+        ->name('admin.referral-links');
 });
 
 require __DIR__ . '/auth.php';
