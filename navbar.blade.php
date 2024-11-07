@@ -67,37 +67,35 @@
                     </div>
                 </div>
                 <div class="navbar-center hidden lg:flex">
-                    <ul class="menu menu-horizontal menu-sm gap-2 px-1 lg:pl-80 text-black pt-20 flex justify-between items-center">
-                        <li class="font-medium flex items-center">
-                            <a href="https://fitco.au" class="flex items-center">
-                                <img src="/images/Fit Co_Blue.svg" alt="FitCo" class="w-16 h-16">
-                            </a>
-                        </li>
-                        <li class="font-medium flex items-center">
+                    <ul class="menu menu-horizontal menu-sm gap-2 px-1 lg:pl-80 text-black pt-20 flex justify-between">
+                        <li class="font-medium"><a href="/">Home</a></li>
+                        <li class="font-medium"><a href="/#services">Menu</a></li>
+                        <li class="font-medium pt-1 relative">
                             @if (Auth::check())
-                                <button wire:click="$dispatch('openUserModal')" aria-label="User account" class="flex items-center">
+                                <button wire:click="$dispatch('openUserModal')" aria-label="User account">
                                     <i class="fas fa-user"></i>
                                 </button>
                             @else
-                                <button wire:click="$dispatch('show-modal')" aria-label="User account" class="flex items-center">
+                                <button wire:click="$dispatch('show-modal')" aria-label="User account">
                                     <i class="fas fa-user"></i>
                                 </button>
                             @endif
                         </li>
-                        <li class="font-medium flex items-center relative">
-                            <button onclick="toggleSidebarEvent()" aria-label="Open shopping cart" class="flex items-center">
+                        <li class="font-medium pt-1 relative">
+                            <button onclick="toggleSidebarEvent()" aria-label="Open shopping cart">
                                 <i class="fas fa-shopping-cart"></i>
                                 @if ($cartItemCount > 0)
                                     <span
-                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                                        class="absolute right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center"
+                                        style="top: -6px;">
                                         {{ $cartItemCount }}
                                     </span>
                                 @endif
                             </button>
                         </li>
                         @if (Auth::check() && Auth::user()->hasMembership())
-                            <li class="font-medium flex items-center">
-                                <a href="/meals" aria-label="Meals" class="flex items-center">
+                            <li class="font-medium pt-1 relative">
+                                <a href="/meals" aria-label="Meals">
                                     <i class="fas fa-utensils"></i>
                                 </a>
                             </li>
@@ -118,10 +116,10 @@
                             <img class="w-50 md:w-32 lg:w-48 h-auto tracking-tighter" src="/images/logo-removebg.webp"
                                 alt="FitFoodCo" width="192" height="128" />
                         </li>
-                            <a href="/FitCo" onclick="document.getElementById('my-drawer').checked = false;">
-                                <img src="/images/Fit Co_Blue.svg" alt="FitCo" class="w-12 h-12"> <!-- Aumentato a w-12 h-12 -->
-                            </a>
-                        </li>
+                        <li class="font-medium"><a href="/"
+                                onclick="document.getElementById('my-drawer').checked = false;">Home</a></li>
+                        <li class="font-medium"><a href="/#menu"
+                                onclick="document.getElementById('my-drawer').checked = false;">Menu</a></li>
                         <li class="font-medium text-red-700"><a
                                 onclick="document.getElementById('my-drawer').checked = false;">Close</a></li>
                     </ul>
@@ -130,43 +128,13 @@
 
         </div>
         <script>
-document.addEventListener('DOMContentLoaded', function () {
-    function getNextDeliveryDate() {
-        const oggi = new Date();
-        const giorniFinoALunedi = (1 + 7 - oggi.getDay()) % 7;
-        const prossimoLunedi = new Date(oggi);
-        prossimoLunedi.setDate(oggi.getDate() + giorniFinoALunedi);
-        prossimoLunedi.setHours(23, 59, 59, 999);
-        return prossimoLunedi;
-    }
-
-    function updateCountdown() {
-        const now = new Date();
-        const targetDate = getNextDeliveryDate();
-        const distance = targetDate - now;
-
-        if (distance > 0) {
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById('days').innerText = days;
-            document.getElementById('hours').innerText = hours;
-            document.getElementById('minutes').innerText = minutes;
-            document.getElementById('seconds').innerText = seconds;
-        } else {
-            document.getElementById('days').innerText = "0";
-            document.getElementById('hours').innerText = "0";
-            document.getElementById('minutes').innerText = "0";
-            document.getElementById('seconds').innerText = "0";
-        }
-    }
-
-    updateCountdown(); // Esegui subito il countdown
-    setInterval(updateCountdown, 1000); // Aggiorna ogni secondo
-});
-
+            document.querySelector('a[href="/#menu"]').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.scrollTo({
+                    top: document.querySelector('#menu').offsetTop + 100, // 100 is the offset from the top
+                    behavior: 'smooth'
+                });
+            });
 
             function toggleSidebarEvent() {
                 window.dispatchEvent(new CustomEvent('toggleSidebar'));
