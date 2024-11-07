@@ -25,7 +25,7 @@
             <li class="font-medium"><a href="/admin/undelivered">Undelivered</a></li>
             <li class="font-medium"><a href="/admin/cooked">Cooked</a></li>
             <li class="font-medium"><a href="/admin/delivered">Delivered</a></li>
-            <li class="font-medium"><a href="/admin/referral-links">Referral Links</a></li>
+            <li class="font-medium"><a href="/referral-links">Referral Links</a></li>
         </ul>
     </div>
     </nav>

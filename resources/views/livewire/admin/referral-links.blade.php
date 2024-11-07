@@ -4,7 +4,7 @@
         <div class="flex gap-4">
             <input 
                 type="text" 
-                wire:model.live="search" 
+                wire:model.live.debounce.300ms="search" 
                 placeholder="Search..."
                 class="px-4 py-2 border rounded-lg"
             >
@@ -20,7 +20,12 @@
     </div>
 
     @if (session()->has('message'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+        <div 
+            x-data="{ show: true }"
+            x-show="show"
+            x-init="setTimeout(() => show = false, 3000)"
+            class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+        >
             {{ session('message') }}
         </div>
     @endif
@@ -51,7 +56,7 @@
                                 target="_blank"
                                 class="text-blue-600 hover:text-blue-800"
                             >
-                                {{ route('referral.handle', $link->code) }}
+                                View Link
                             </a>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $link->created_at->format('Y-m-d H:i') }}</td>
@@ -59,6 +64,7 @@
                             <button 
                                 wire:click="deleteReferralLink({{ $link->id }})"
                                 class="text-red-600 hover:text-red-800"
+                                onclick="return confirm('Are you sure you want to delete this referral link?')"
                             >
                                 Delete
                             </button>
@@ -67,5 +73,9 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <div class="mt-4">
+        {{ $links->links() }}
     </div>
 </div>
