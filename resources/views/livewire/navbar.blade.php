@@ -118,7 +118,7 @@
                             <img class="w-50 md:w-32 lg:w-48 h-auto tracking-tighter" src="/images/logo-removebg.webp"
                                 alt="FitFoodCo" width="192" height="128" />
                         </li>
-                            <a href="/FitCo" onclick="document.getElementById('my-drawer').checked = false;">
+                            <a href="https://fitco.au" onclick="document.getElementById('my-drawer').checked = false;">
                                 <img src="/images/Fit Co_Blue.svg" alt="FitCo" class="w-12 h-12"> <!-- Aumentato a w-12 h-12 -->
                             </a>
                         </li>
