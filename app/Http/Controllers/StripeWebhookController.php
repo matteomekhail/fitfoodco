@@ -93,25 +93,41 @@ class StripeWebhookController extends Controller
         }
 
         $subscription = $this->stripe->subscriptions->retrieve($subscriptionId);
-
-        $productId = $subscription->items->data[0]->plan->product;
-        $product = $this->stripe->products->retrieve($productId);
-
         $user->stripe_id = $subscription->customer;
-        $user->membership = $this->mapProductNameToMembershipType($product->name);
 
+        // Verifica se è una membership Custom15 dal metadata
+        if (isset($session['metadata']) && isset($session['metadata']['membership_type']) && $session['metadata']['membership_type'] === 'Custom15') {
+            $user->membership = 'Custom15';
+        } else {
+            // Gestione standard delle altre membership
+            $productId = $subscription->items->data[0]->plan->product;
+            $product = $this->stripe->products->retrieve($productId);
+            $user->membership = $this->mapProductNameToMembershipType($product->name);
+        }
+
+        // Salva l'indirizzo se presente
         if (isset($session['shipping_details']['address'])) {
             $address = $session['shipping_details']['address'];
             $user->street = $address['line1'];
             $user->city = $address['city'];
             $user->state = $address['state'];
             $user->zip = $address['postal_code'];
-            $user->save();
         }
 
-        \App\Models\MealSelection::where('user_id', $user->id)->update(['status' => 'current']);
+        try {
+            $user->save();
+            
+            // Aggiorna lo stato delle selezioni pasti
+            \App\Models\MealSelection::where('user_id', $user->id)
+                ->where('status', '!=', 'past')
+                ->update(['status' => 'current']);
 
-        return response()->json(['success' => 'Membership aggiornata correttamente']);
+            \Log::info('Membership aggiornata con successo per utente: ' . $user->email);
+            return response()->json(['success' => 'Membership aggiornata correttamente']);
+        } catch (\Exception $e) {
+            \Log::error('Errore durante aggiornamento membership: ' . $e->getMessage());
+            return response()->json(['error' => 'Errore durante aggiornamento membership'], 500);
+        }
     }
 
 
@@ -127,8 +143,16 @@ class StripeWebhookController extends Controller
             'Gourmet Membership' => 'Gourmet',
             'Premium Membership' => 'Premium',
             'Deluxe Membership' => 'Deluxe',
+            'Custom 15 Meals Membership' => 'Custom15'
         ];
-        return $plans[$productName] ?? null;
+        
+        $membershipType = $plans[$productName] ?? null;
+        
+        if (!$membershipType) {
+            \Log::warning('Tipo membership non riconosciuto: ' . $productName);
+        }
+        
+        return $membershipType;
     }
 
     protected function saveSessionLineItems($sessionId, $orderId)

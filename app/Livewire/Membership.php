@@ -54,6 +54,7 @@ class Membership extends Component
             'Gourmet' => 'Gourmet Membership',
             'Premium' => 'Premium Membership',
             'Deluxe' => 'Deluxe Membership',
+            'Custom15' => 'Custom 15 Meals Membership'  // Visibile solo internamente
         ];
 
         return $plans[$plan] ?? 'Unknown Plan';
@@ -65,6 +66,7 @@ class Membership extends Component
             'Gourmet' => 11352,
             'Premium' => 16132,
             'Deluxe' => 20000,
+            'Custom15' => 13500  // $9 x 15 meals = $135
         ];
 
         return $prices[$plan] ?? 0;

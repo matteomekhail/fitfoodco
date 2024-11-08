@@ -29,12 +29,11 @@ class MealSelectionModal extends Component
 
     protected function setMembershipMealLimit($membership)
     {
-        // Qui imposti il limite di selezioni in base alla membership
-        // Ad esempio, puoi avere una mappatura hard-coded o recuperare questi dati da un database
         $limits = [
             'Gourmet' => 10,
             'Premium' => 15,
             'Deluxe' => 20,
+            'Custom15' => 15
         ];
         $this->membershipMealLimit = $limits[$membership] ?? 0;
     }
