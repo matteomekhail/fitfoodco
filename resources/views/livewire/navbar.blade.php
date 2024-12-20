@@ -7,6 +7,13 @@
         class="sticky top-0 z-30 lg:bg-opacity-90 lg:fixed lg:backdrop-blur-lg w-full lg:h-60 h-48 flex items-center shadow-2xl">
         <div class="w-full bg-black text-white py-2 text-center fixed top-0 z-50">
             <p class="text-lg font-bold">Next delivery day:</p>
+            @php
+                $today = now();
+                $january13 = Carbon\Carbon::create(2025, 1, 13);
+            @endphp
+            @if($today->lt($january13))
+                <p class="text-sm text-red-400 mb-1">Due to the Christmas holiday period, deliveries will resume from January 13th, 2025</p>
+            @endif
             <div class="flex justify-center text-xl font-bold" wire:ignore>
                 <div class="px-1">
                     <span id="days"></span>
@@ -133,10 +140,20 @@
 document.addEventListener('DOMContentLoaded', function () {
     function getNextDeliveryDate() {
         const oggi = new Date();
-        const giorniFinoALunedi = (1 + 7 - oggi.getDay()) % 7;
+        const january13 = new Date('2025-01-13T23:59:59');
+        
+        // Forza il ritorno del 13 gennaio se siamo prima di quella data
+        if (oggi < january13) {
+            console.log("Prima del 13 gennaio - Target: 13 gennaio");
+            return january13;
+        }
+        
+        // Dopo il 13 gennaio, calcola il prossimo lunedì
         const prossimoLunedi = new Date(oggi);
-        prossimoLunedi.setDate(oggi.getDate() + giorniFinoALunedi);
+        prossimoLunedi.setDate(oggi.getDate() + ((1 + 7 - oggi.getDay()) % 7 || 7));
         prossimoLunedi.setHours(23, 59, 59, 999);
+        
+        console.log("Dopo il 13 gennaio - Target: prossimo lunedì", prossimoLunedi);
         return prossimoLunedi;
     }
 
@@ -145,65 +162,25 @@ document.addEventListener('DOMContentLoaded', function () {
         const targetDate = getNextDeliveryDate();
         const distance = targetDate - now;
 
-        if (distance > 0) {
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            document.getElementById('days').innerText = days;
-            document.getElementById('hours').innerText = hours;
-            document.getElementById('minutes').innerText = minutes;
-            document.getElementById('seconds').innerText = seconds;
-        } else {
-            document.getElementById('days').innerText = "0";
-            document.getElementById('hours').innerText = "0";
-            document.getElementById('minutes').innerText = "0";
-            document.getElementById('seconds').innerText = "0";
-        }
+        document.getElementById('days').innerText = String(days).padStart(2, '0');
+        document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+        document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
     }
 
-    updateCountdown(); // Esegui subito il countdown
-    setInterval(updateCountdown, 1000); // Aggiorna ogni secondo
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 });
 
 
             function toggleSidebarEvent() {
                 window.dispatchEvent(new CustomEvent('toggleSidebar'));
             }
-
-            function getNextDeliveryDate() {
-                const oggi = new Date();
-                const giorniFinoALunedi = (1 + 7 - oggi.getDay()) % 7;
-                const prossimoLunedi = new Date(oggi);
-                prossimoLunedi.setDate(oggi.getDate() + giorniFinoALunedi);
-                prossimoLunedi.setHours(23, 59, 59, 999);
-                return prossimoLunedi;
-            }
-
-            function updateCountdown() {
-                const now = new Date();
-                const targetDate = getNextDeliveryDate();
-                const distance = targetDate - now;
-
-                // Calcolo giorni, ore, minuti e secondi
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                // Visualizza il risultato
-                document.getElementById('days').innerText = days;
-                document.getElementById('hours').innerText = hours;
-                document.getElementById('minutes').innerText = minutes;
-                document.getElementById('seconds').innerText = seconds;
-            }
-
-            // Aggiorna il countdown ogni 1 secondo
-            setInterval(updateCountdown, 1000);
-
-            // Aggiorna il countdown ogni 1 secondo
-            setInterval(updateCountdown, 1000);
         </script>
     </div>
 </div>
