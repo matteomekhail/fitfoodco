@@ -15,23 +15,28 @@ use App\Http\Controllers\ReferralController;
 |
 */
 
-Route::view('/', 'welcome')->name('home');
+// Coming soon page
+Route::view('/coming-soon', 'coming-soon')->name('coming-soon');
 
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
-
+// Admin route - keep this accessible
 Route::get('/admin/{filter?}', function ($filter = null) {
     return view('admin', ['filter' => $filter]);
 })->middleware('admin');
 
-Route::view('/meals', 'selectionMeals');
+// Stripe webhook - keep this accessible for payment processing
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
 
-Route::view('/success', 'success');
-
-Route::get('/ref/{code}', [ReferralController::class, 'handleReferral'])->name('referral.handle');
-
+// Admin referral links - keep this accessible for admins
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/referral-links', \App\Livewire\Admin\ReferralLinks::class)
         ->name('admin.referral-links');
 });
 
+// Auth routes - keep these accessible
 require __DIR__ . '/auth.php';
+
+// Redirect all other routes to the coming soon page
+// This must be the last route to catch everything else
+Route::any('/{any?}', function () {
+    return redirect()->route('coming-soon');
+})->where('any', '.*');
